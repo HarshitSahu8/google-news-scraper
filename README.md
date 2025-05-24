@@ -10,6 +10,8 @@ A lightweight package that scrapes article data from [Google News](https://news.
 * [Usage](#usage-%EF%B8%8F)
 * [Output](#output-)
 * [Config](#config-%EF%B8%8F)
+* [TypeScript](#typescript-)
+* [CommonJS](#common-js-)
 * [Performance](#performance-)
 * [Upkeep](#upkeep-)
 * [Bugs](#bugs-)
@@ -30,11 +32,10 @@ yarn add google-news-scraper
 ## Usage 🕹️
 Simply import the package and pass a config object.
 ```javascript
-const googleNewsScraper = require('google-news-scraper');
-
+import googleNewsScraper from 'google-news-scraper';
 const articles = await googleNewsScraper({ searchTerm: "The Oscars" });
-
 ```
+A minimum working example can be found in [this repo](https://github.com/lewisdonovan/gns-example). 
 Full documentation on the [config object](#config) can be found below.
 
 ## Output 📲
@@ -86,7 +87,7 @@ The format of the timeframe is a string comprised of a number, followed by a let
 * m = months (eg: `6m`)
 * y = years (eg: `1y`)
 
-This setting has no default, leaving it blank will return the default results that Google gives if you don't specify a timeframe.
+Defaults to `7d`.
 
 #### getArticleContent
 By default, the scraper does not return the article content, as this would require Puppeteer to navigate to each individual article in the results (increasing execution time significantly). If you would like to enable this behaviour, and receive the content of each article, simply pass `getArticleContent: true,` in the config. This will add two fields to each article in the output: `content` and `favicon`.
@@ -126,7 +127,6 @@ An object of additional query params to add to the Google News URL string, forma
 const articles = await googleNewsScraper({
     searchTerm: "Últimas noticias en Madrid",
     queryVars: {
-        hl:"es-ES",
         gl:"ES",
         ceid:"ES:es"
     },
@@ -144,6 +144,25 @@ Defaults to `[]`
 Whether or not Puppeteer should run in [headless mode](https://www.browserstack.com/guide/puppeteer-headless). Running in headless mode increases performance by approximately 30% (credit to [ole-ve](https://github.com/lewisdonovan/google-news-scraper/pull/45) for finding this). If you're not sure about this setting, leave it as it is.
 
 Defaults to `true`
+
+#### limit
+The total number of articles that you would like to be returned. Please note that with higher numbers, the actual returned number may be lower. Typically the max is `99`, but it varies depending on many variables in Puppeteer (such as rate limiting, network conditions etc.). 
+
+Defaults to `99` 
+
+## TypeScript 💙
+Google News Scraper includes full [TypeScript](https://typescriptlang.org/) definitions. 
+
+Your IDE should pick the types up automatically, but if not you can find them in the `dist/tsc/` folder.
+
+## Common JS 👴🏻
+Google News Scraper is built to work as an [ESM module](https://nodejs.org/api/esm.html) out of the box, but also works as a [Common JS module](https://nodejs.org/api/modules.html) too, just use `require` instead of `import`:
+```javascript
+const googleNewsScraper = require('google-news-scraper');
+
+const articles = await googleNewsScraper({ searchTerm: "The Oscars" });
+
+```
 
 ## Performance 📈
 My test query returned 94 results, which took 4.5 seconds with article content and 3.6 seconds without it. I'm on a fibre connection, and other queries may return a different number of results, so your mileage may vary. 
